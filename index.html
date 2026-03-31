@@ -2,89 +2,107 @@
 <html lang="pt-br">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Física Prime Lab</title>
     <style>
-        :root { --azul: #3498db; --escuro: #2c3e50; }
-        body { font-family: 'Segoe UI', Arial, sans-serif; background: #f4f7f6; margin: 0; }
-        header { background: var(--escuro); color: white; text-align: center; padding: 30px; border-bottom: 5px solid var(--azul); }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f4f7f6; }
+        body { font-family: 'Segoe UI', Arial, sans-serif; margin: 0; background: var(--bg); color: #333; }
+        header { background: var(--primary); color: white; padding: 30px; text-align: center; border-bottom: 5px solid var(--accent); }
         
-        nav { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; padding: 15px; background: #fff; position: sticky; top: 0; box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 100; }
-        button { padding: 10px 20px; border: none; border-radius: 5px; background: #eee; font-weight: bold; cursor: pointer; transition: 0.3s; }
-        button:hover, button.active { background: var(--azul); color: white; }
+        nav { 
+            display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; 
+            padding: 15px; background: #fff; position: sticky; top: 0; 
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1); z-index: 1000;
+        }
+
+        nav button { 
+            padding: 12px 20px; border: none; border-radius: 6px; 
+            background: #e4e6eb; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+
+        nav button:hover, nav button.active { background: var(--accent); color: white; transform: translateY(-2px); }
 
         main { max-width: 850px; margin: 30px auto; padding: 0 20px; }
 
-        /* Card estilo Engenharia */
-        .card { 
-            background: white; padding: 35px; border-radius: 12px; 
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05); margin-bottom: 25px; 
-            border-left: 8px solid var(--azul);
-            line-height: 1.8; font-size: 1.1rem;
-            white-space: pre-wrap; /* MÁGICA: Respeita os parágrafos do Docs */
-            animation: sobe 0.4s ease-out;
+        /* Estilo dos Cards de Aula */
+        .card-aula { 
+            background: #fff; padding: 35px; border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 25px; 
+            border-left: 8px solid var(--accent);
+            line-height: 1.8;
+            font-size: 1.1rem;
+            /* MANTÉM A FORMATAÇÃO DE ESPAÇOS E PARÁGRAFOS DO DOCS */
+            white-space: pre-wrap; 
+            animation: sobeCard 0.5s ease-out;
         }
 
-        @keyframes sobe { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
-        #carregando { text-align: center; color: #7f8c8d; font-style: italic; }
+        @keyframes sobeCard {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        #status { text-align: center; padding: 50px; color: #7f8c8d; font-style: italic; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Física Prime Lab</h1>
-    <p>Conteúdo Técnico e Didático</p>
+    <p>Portal de Conteúdo Técnico e Engenharia</p>
 </header>
 
 <nav id="menu">
-    <button onclick="puxar('Mecânica', this)">Mecânica</button>
-    <button onclick="puxar('Hidrostática e Hidrodinâmica', this)">Hidrostática</button>
-    <button onclick="puxar('Termologia e Termodinâmica', this)">Termodinâmica</button>
-    <button onclick="puxar('Óptica', this)">Óptica</button>
-    <button onclick="puxar('Ondulatória', this)">Ondulatória</button>
-    <button onclick="puxar('Eletricidade e Magnetismo', this)">Eletromagnetismo</button>
-    <button onclick="puxar('Física Moderna', this)">Física Moderna</button>
+    <button onclick="carregar('Mecânica', this)">Mecânica</button>
+    <button onclick="carregar('Hidrostática e Hidrodinâmica', this)">Hidrostática</button>
+    <button onclick="carregar('Termologia e Termodinâmica', this)">Termodinâmica</button>
+    <button onclick="carregar('Óptica', this)">Óptica</button>
+    <button onclick="carregar('Ondulatória', this)">Ondulatória</button>
+    <button onclick="carregar('Eletricidade e Magnetismo', this)">Eletromagnetismo</button>
+    <button onclick="carregar('Física Moderna', this)">Física Moderna</button>
 </nav>
 
-<main id="painel">
-    <div id="carregando">Selecione uma matéria acima.</div>
+<main id="box">
+    <div id="status">Selecione uma área da física acima para iniciar.</div>
 </main>
 
 <script>
-    const URL_SCRIPT = "https://script.google.com/macros/s/AKfycbwsWAYcKuZ0St1qSCQyTXhBP1cCtuAvNM2A4J1FvpqxGPb2pYxHK8gglWkvBnxK0F2QQA/exec"; // <--- COLE SUA URL AQUI
-    let cacheDados = null;
+    // COLOQUE AQUI A URL DO SEU GOOGLE APPS SCRIPT
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsWAYcKuZ0St1qSCQyTXhBP1cCtuAvNM2A4J1FvpqxGPb2pYxHK8gglWkvBnxK0F2QQA/exec"; 
+    let bancoDados = null;
 
-    async function puxar(materia, btn) {
-        const painel = document.getElementById('painel');
+    async function carregar(materia, btn) {
+        const box = document.getElementById('box');
         document.querySelectorAll('button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
-        painel.innerHTML = "<div id='carregando'>Conectando ao laboratório de " + materia + "...</div>";
+        box.innerHTML = "<div id='status'>Sincronizando com o Google Docs...</div>";
 
         try {
-            if (!cacheDados) {
-                const r = await fetch(URL_SCRIPT);
-                cacheDados = await r.json();
+            if (!bancoDados) {
+                const res = await fetch(SCRIPT_URL);
+                bancoDados = await res.json();
             }
 
-            const aulas = cacheDados[materia] || [];
-            painel.innerHTML = "";
+            const aulas = bancoDados[materia] || [];
+            box.innerHTML = "";
 
             if (aulas.length === 0) {
-                painel.innerHTML = "<div class='card'>Nenhum documento encontrado para " + materia + ".</div>";
+                box.innerHTML = "<div class='card-aula'>Nenhum material encontrado para " + materia + ".</div>";
                 return;
             }
 
             aulas.forEach(aula => {
-                const div = document.createElement('div');
-                div.className = 'card';
-                // Usamos 'conteudo' porque foi o nome que demos no script lá em cima
-                div.textContent = aula.conteudo; 
-                painel.appendChild(div);
+                const card = document.createElement('div');
+                card.className = 'card-aula';
+                // Usamos textContent para evitar erros de código e preservar o texto puro
+                card.textContent = aula.conteudo; 
+                box.appendChild(card);
             });
 
         } catch (e) {
-            painel.innerHTML = "<div class='card'>Erro: Verifique a URL do Script e se o acesso é 'Qualquer Pessoa'.</div>";
+            box.innerHTML = "<div class='card-aula'>Erro de conexão. Verifique a URL do Script e se o acesso está como 'Qualquer Pessoa'.</div>";
         }
     }
 </script>
+
 </body>
 </html>
