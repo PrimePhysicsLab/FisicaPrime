@@ -3,101 +3,135 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Portal de Física</title>
+    <title>Física Prime - Laboratório Digital</title>
     <style>
+        /* CSS de Engenharia: Limpo, Moderno e Responsivo */
         :root {
             --primary: #2c3e50;
             --accent: #3498db;
-            --bg: #f4f7f6;
-            --text: #333;
+            --bg: #f8f9fa;
+            --text: #2c3e50;
+            --card-bg: #ffffff;
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
             margin: 0;
             background-color: var(--bg);
             color: var(--text);
+            line-height: 1.6;
         }
 
         header {
-            background-color: var(--primary);
+            background: linear-gradient(135deg, var(--primary), #1a252f);
             color: white;
-            padding: 1rem;
+            padding: 2rem 1rem;
             text-align: center;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
         }
 
-        /* Menu de Abas Responsivo */
+        header h1 { margin: 0; font-size: 2.2rem; letter-spacing: 1px; }
+        header p { margin: 10px 0 0; opacity: 0.8; font-weight: 300; }
+
+        /* Menu de Navegação Superior */
         nav {
             display: flex;
             flex-wrap: wrap;
             justify-content: center;
-            background: #fff;
-            padding: 10px;
-            gap: 10px;
+            background: white;
+            padding: 15px;
+            gap: 12px;
             position: sticky;
             top: 0;
-            z-index: 100;
-            border-bottom: 2px solid #ddd;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.05);
         }
 
         nav button {
-            padding: 10px 15px;
-            border: none;
-            background: #ecf0f1;
+            padding: 12px 20px;
+            border: 2px solid transparent;
+            background: #f1f3f5;
+            color: var(--primary);
             cursor: pointer;
-            border-radius: 5px;
-            font-weight: bold;
-            transition: 0.3s;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
         }
 
         nav button:hover {
             background: var(--accent);
             color: white;
+            transform: translateY(-2px);
         }
 
         nav button.active {
             background: var(--accent);
             color: white;
+            border-color: #2980b9;
+            box-shadow: 0 4px 8px rgba(52, 152, 219, 0.3);
         }
 
-        /* Área de Conteúdo */
+        /* Conteúdo Principal */
         main {
-            max-width: 900px;
-            margin: 20px auto;
-            padding: 20px;
-            background: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
-            min-height: 400px;
+            max-width: 850px;
+            margin: 30px auto;
+            padding: 0 20px;
+            min-height: 500px;
         }
 
         #loader {
             text-align: center;
-            font-style: italic;
-            color: #7f8c8d;
-            margin-top: 50px;
+            padding: 50px;
+            color: #95a5a6;
+            font-size: 1.2rem;
         }
 
+        /* Estilização dos Cards de Aula */
         .artigo {
-            line-height: 1.6;
-            font-size: 1.1rem;
-            border-bottom: 1px dashed #eee;
-            padding-bottom: 20px;
+            background: var(--card-bg);
+            padding: 40px;
+            margin-bottom: 30px;
+            border-radius: 15px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05);
+            border-left: 8px solid var(--accent);
+            animation: fadeIn 0.5s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .artigo h2 {
+            margin-top: 0;
+            color: var(--primary);
+            font-size: 1.8rem;
+            border-bottom: 2px solid #f1f3f5;
+            padding-bottom: 15px;
             margin-bottom: 20px;
         }
 
-        .artigo h2 { color: var(--primary); }
+        .artigo p {
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
+            text-align: justify;
+        }
 
-        /* Estilo para fórmulas e destaques vindos do Docs */
-        pre { background: #eee; padding: 10px; border-left: 5px solid var(--accent); overflow-x: auto; }
+        /* Rodapé */
+        footer {
+            text-align: center;
+            padding: 40px;
+            color: #bdc3c7;
+            font-size: 0.9rem;
+        }
     </style>
 </head>
 <body>
 
 <header>
-    <h1>Portal de Física</h1>
-    <p>Física em um só lugar</p>
+    <h1>Física Prime Lab</h1>
+    <p>Conteúdo Dinâmico para Engenharia e Ensino</p>
 </header>
 
 <nav id="menu">
@@ -106,64 +140,74 @@
     <button onclick="carregarMateria('Termologia e Termodinâmica', this)">Termologia</button>
     <button onclick="carregarMateria('Óptica', this)">Óptica</button>
     <button onclick="carregarMateria('Ondulatória', this)">Ondulatória</button>
-    <button onclick="carregarMateria('Eletricidade', this)">Eletro/Mag</button>
-    <button onclick="carregarMateria('Magnetismo e Eletromagnetismo', this)">Eletro/Mag</button>
+    <button onclick="carregarMateria('Eletricidade e Magnetismo', this)">Eletro/Mag</button>
     <button onclick="carregarMateria('Física Moderna', this)">Física Moderna</button>
 </nav>
 
 <main>
-    <div id="loader">Aguardando seleção de conteúdo...</div>
+    <div id="loader">Escolha um tópico acima para começar os estudos.</div>
     <div id="display-conteudo"></div>
 </main>
 
+<footer>
+    &copy; 2026 Física Prime Lab - Desenvolvido para Educação Técnica
+</footer>
+
 <script>
-    // --- CONFIGURAÇÃO ---
+    // --- COLE SUA URL DO GOOGLE APPS SCRIPT ABAIXO ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsWAYcKuZ0St1qSCQyTXhBP1cCtuAvNM2A4J1FvpqxGPb2pYxHK8gglWkvBnxK0F2QQA/exec"; 
 
-    let bancoDeDados = null;
-
-    async function buscarDados() {
-        if (!bancoDeDados) {
-            const response = await fetch(SCRIPT_URL);
-            bancoDeDados = await response.json();
-        }
-        return bancoDeDados;
-    }
+    let cacheDados = null;
 
     async function carregarMateria(materia, botao) {
         const display = document.getElementById('display-conteudo');
         const loader = document.getElementById('loader');
         
-        // Estética: marcar botão ativo
+        // UI: Ativa o botão selecionado
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         botao.classList.add('active');
 
         loader.style.display = "block";
-        loader.innerText = `Buscando aulas de ${materia} no banco de dados...`;
+        loader.innerHTML = `Conectando ao banco de dados de <b>${materia}</b>...`;
         display.innerHTML = "";
 
         try {
-            const dados = await buscarDados();
-            const aulas = dados[materia];
+            // Busca os dados apenas se o cache estiver vazio
+            if (!cacheDados) {
+                const response = await fetch(SCRIPT_URL);
+                cacheDados = await response.json();
+            }
 
+            const aulas = cacheDados[materia];
             loader.style.display = "none";
 
             if (!aulas || aulas.length === 0) {
-                display.innerHTML = `<p>Nenhum conteúdo encontrado para <b>${materia}</b> ainda.</p>`;
+                display.innerHTML = `
+                    <div class="artigo" style="border-left-color: #e74c3c;">
+                        <h2>Ops!</h2>
+                        <p>Ainda não há documentos vinculados à coluna <b>${materia}</b> na sua planilha.</p>
+                    </div>`;
                 return;
             }
 
             aulas.forEach(aula => {
                 const div = document.createElement('div');
                 div.className = 'artigo';
-                // O texto vindo do Google Docs preserva quebras de linha
-                div.innerHTML = `<h2>Conteúdo Atualizado</h2><div>${aula.texto.replace(/\n/g, '<br>')}</div>`;
+                
+                // Formatação Inteligente: Transforma quebras de linha em parágrafos reais
+                const conteudoFormatado = aula.texto
+                    .split('\n')
+                    .filter(linha => linha.trim() !== '')
+                    .map(linha => `<p>${linha}</p>`)
+                    .join('');
+
+                div.innerHTML = `<h2>Exploração Teórica</h2>${conteudoFormatado}`;
                 display.appendChild(div);
             });
 
         } catch (erro) {
-            loader.innerText = "Erro ao conectar com a planilha. Verifique a URL do Script.";
-            console.error(erro);
+            loader.innerHTML = `<b style="color:red">Erro de Conexão:</b> Verifique se a URL do Script está correta e se a implantação foi feita para "Qualquer pessoa".`;
+            console.error("Erro:", erro);
         }
     }
 </script>
