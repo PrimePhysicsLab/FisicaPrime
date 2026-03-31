@@ -195,15 +195,19 @@
                 div.className = 'artigo';
                 
                 // Formatação Inteligente: Transforma quebras de linha em parágrafos reais
-                const conteudoFormatado = aula.texto
-                    .split('\n')
-                    .filter(linha => linha.trim() !== '')
-                    .map(linha => `<p>${linha}</p>`)
-                    .join('');
+              // 1. Traduz os asteriscos do Docs para Negrito real
+const textoComNegrito = aula.texto.replace(/\*\*(.*?)\*\*/g, '<b>$1</b>');
 
-                div.innerHTML = `<h2>Exploração Teórica</h2>${conteudoFormatado}`;
-                display.appendChild(div);
-            });
+// 2. Organiza os parágrafos
+const conteudoFormatado = textoComNegrito
+    .split('\n')
+    .filter(linha => linha.trim() !== '')
+    .map(linha => `<p>${linha}</p>`)
+    .join('');
+
+// 3. Coloca tudo dentro do seu Card azul
+div.innerHTML = `<h2>Exploração Teórica</h2>${conteudoFormatado}`;
+display.appendChild(div);
 
         } catch (erro) {
             loader.innerHTML = `<b style="color:red">Erro de Conexão:</b> Verifique se a URL do Script está correta e se a implantação foi feita para "Qualquer pessoa".`;
