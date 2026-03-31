@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Portal de Física - Engenharia de Ensino</title>
+    <style>
+        :root {
+            --primary: #2c3e50;
+            --accent: #3498db;
+            --bg: #f4f7f6;
+            --text: #333;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            background-color: var(--bg);
+            color: var(--text);
+        }
+
+        header {
+            background-color: var(--primary);
+            color: white;
+            padding: 1rem;
+            text-align: center;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        /* Menu de Abas Responsivo */
+        nav {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            background: #fff;
+            padding: 10px;
+            gap: 10px;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            border-bottom: 2px solid #ddd;
+        }
+
+        nav button {
+            padding: 10px 15px;
+            border: none;
+            background: #ecf0f1;
+            cursor: pointer;
+            border-radius: 5px;
+            font-weight: bold;
+            transition: 0.3s;
+        }
+
+        nav button:hover {
+            background: var(--accent);
+            color: white;
+        }
+
+        nav button.active {
+            background: var(--accent);
+            color: white;
+        }
+
+        /* Área de Conteúdo */
+        main {
+            max-width: 900px;
+            margin: 20px auto;
+            padding: 20px;
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+            min-height: 400px;
+        }
+
+        #loader {
+            text-align: center;
+            font-style: italic;
+            color: #7f8c8d;
+            margin-top: 50px;
+        }
+
+        .artigo {
+            line-height: 1.6;
+            font-size: 1.1rem;
+            border-bottom: 1px dashed #eee;
+            padding-bottom: 20px;
+            margin-bottom: 20px;
+        }
+
+        .artigo h2 { color: var(--primary); }
+
+        /* Estilo para fórmulas e destaques vindos do Docs */
+        pre { background: #eee; padding: 10px; border-left: 5px solid var(--accent); overflow-x: auto; }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Portal de Física</h1>
+    <p>Engenharia e Ciência em um só lugar</p>
+</header>
+
+<nav id="menu">
+    <button onclick="carregarMateria('Mecânica', this)">Mecânica</button>
+    <button onclick="carregarMateria('Hidrostática e Hidrodinâmica', this)">Hidrostática/Dinâmica</button>
+    <button onclick="carregarMateria('Termologia e Termodinâmica', this)">Termologia</button>
+    <button onclick="carregarMateria('Óptica', this)">Óptica</button>
+    <button onclick="carregarMateria('Ondulatória', this)">Ondulatória</button>
+    <button onclick="carregarMateria('Eletricidade e Magnetismo', this)">Eletro/Mag</button>
+    <button onclick="carregarMateria('Física Moderna', this)">Física Moderna</button>
+</nav>
+
+<main>
+    <div id="loader">Aguardando seleção de conteúdo...</div>
+    <div id="display-conteudo"></div>
+</main>
+
+<script>
+    // --- CONFIGURAÇÃO ---
+    const SCRIPT_URL = "COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT"; 
+
+    let bancoDeDados = null;
+
+    async function buscarDados() {
+        if (!bancoDeDados) {
+            const response = await fetch(SCRIPT_URL);
+            bancoDeDados = await response.json();
+        }
+        return bancoDeDados;
+    }
+
+    async function carregarMateria(materia, botao) {
+        const display = document.getElementById('display-conteudo');
+        const loader = document.getElementById('loader');
+        
+        // Estética: marcar botão ativo
+        document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
+        botao.classList.add('active');
+
+        loader.style.display = "block";
+        loader.innerText = `Buscando aulas de ${materia} no banco de dados...`;
+        display.innerHTML = "";
+
+        try {
+            const dados = await buscarDados();
+            const aulas = dados[materia];
+
+            loader.style.display = "none";
+
+            if (!aulas || aulas.length === 0) {
+                display.innerHTML = `<p>Nenhum conteúdo encontrado para <b>${materia}</b> ainda.</p>`;
+                return;
+            }
+
+            aulas.forEach(aula => {
+                const div = document.createElement('div');
+                div.className = 'artigo';
+                // O texto vindo do Google Docs preserva quebras de linha
+                div.innerHTML = `<h2>Conteúdo Atualizado</h2><div>${aula.texto.replace(/\n/g, '<br>')}</div>`;
+                display.appendChild(div);
+            });
+
+        } catch (erro) {
+            loader.innerText = "Erro ao conectar com a planilha. Verifique a URL do Script.";
+            console.error(erro);
+        }
+    }
+</script>
+
+</body>
+</html>
