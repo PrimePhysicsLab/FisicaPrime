@@ -117,7 +117,7 @@
 
 <script>
     // --- CONFIGURAÇÃO ---
-    const SCRIPT_URL = "COLE_AQUI_A_URL_DO_SEU_APPS_SCRIPT"; 
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsWAYcKuZ0St1qSCQyTXhBP1cCtuAvNM2A4J1FvpqxGPb2pYxHK8gglWkvBnxK0F2QQA/exec"; 
 
     let bancoDeDados = null;
 
