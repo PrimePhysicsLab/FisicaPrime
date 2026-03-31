@@ -5,10 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Física Prime Lab</title>
     <style>
-        :root { --p: #2c3e50; --a: #3498db; --bg: #f4f7f6; }
+        :root { --primary: #2c3e50; --accent: #3498db; --bg: #f0f2f5; }
         body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; margin: 0; background: var(--bg); color: #333; }
         
-        header { background: var(--p); color: white; padding: 30px; text-align: center; border-bottom: 5px solid var(--a); }
+        header { background: var(--primary); color: white; padding: 40px 20px; text-align: center; border-bottom: 5px solid var(--accent); }
         
         nav { 
             display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; 
@@ -17,95 +17,98 @@
         }
 
         nav button { 
-            padding: 12px 20px; border: none; border-radius: 5px; 
-            background: #eee; font-weight: bold; cursor: pointer; transition: 0.3s;
+            padding: 12px 20px; border: none; border-radius: 8px; 
+            background: #e4e6eb; font-weight: bold; cursor: pointer; transition: 0.3s;
         }
 
-        nav button:hover, nav button.active { background: var(--a); color: white; }
+        nav button:hover, nav button.active { background: var(--accent); color: white; transform: translateY(-2px); }
 
-        main { max-width: 900px; margin: 30px auto; padding: 0 20px; min-height: 400px; }
+        main { max-width: 900px; margin: 30px auto; padding: 0 20px; }
 
-        /* Estilização do Conteúdo que vem do Google Docs */
+        /* Estilo de Cards com Animação */
         .card-aula { 
-            background: #fff; padding: 40px; border-radius: 10px; 
-            box-shadow: 0 4px 20px rgba(0,0,0,0.08); margin-bottom: 30px; 
-            line-height: 1.6; word-wrap: break-word;
+            background: #fff; padding: 40px; border-radius: 12px; 
+            box-shadow: 0 10px 25px rgba(0,0,0,0.05); margin-bottom: 30px; 
+            border-left: 6px solid var(--accent);
+            animation: subir 0.5s ease-out;
         }
 
-        .card-aula h1, .card-aula h2 { color: var(--p); }
-        .card-aula b, .card-aula strong { font-weight: bold; color: #000; }
-        
-        /* Ajuste de Tabelas */
-        table { border-collapse: collapse; width: 100% !important; margin: 20px 0; background: #fff; }
-        table td, table th { border: 1px solid #ccc; padding: 10px; text-align: left; }
-        
-        img { max-width: 100%; height: auto; display: block; margin: 20px auto; }
+        @keyframes subir {
+            from { opacity: 0; transform: translateY(20px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
 
-        #status { text-align: center; padding: 50px; color: #7f8c8d; font-size: 1.2rem; }
+        /* Formatação de Tabelas e Conteúdo */
+        .card-aula table { border-collapse: collapse; width: 100% !important; margin: 20px 0; }
+        .card-aula td, .card-aula th { border: 1px solid #ddd; padding: 12px; }
+        .card-aula b, .card-aula strong { color: #000; font-weight: bold; }
+        img { max-width: 100%; height: auto; border-radius: 8px; }
+
+        #status { text-align: center; padding: 50px; color: #7f8c8d; font-size: 1.1rem; }
     </style>
 </head>
 <body>
 
 <header>
     <h1>Física Prime Lab</h1>
-    <p>Engenharia e Educação Científica</p>
+    <p>Educação de Precisão para Engenharia e Física</p>
 </header>
 
-<nav id="menu">
-    <button onclick="buscar('Mecânica', this)">Mecânica</button>
-    <button onclick="buscar('Hidrostática e Hidrodinâmica', this)">Hidrostática/Dinâmica</button>
-    <button onclick="buscar('Termologia e Termodinâmica', this)">Termologia</button>
-    <button onclick="buscar('Óptica', this)">Óptica</button>
-    <button onclick="buscar('Ondulatória', this)">Ondulatória</button>
-    <button onclick="buscar('Eletricidade e Magnetismo', this)">Eletro/Mag</button>
-    <button onclick="buscar('Física Moderna', this)">Física Moderna</button>
+<nav>
+    <button onclick="carregar('Mecânica', this)">Mecânica</button>
+    <button onclick="carregar('Hidrostática e Hidrodinâmica', this)">Hidrostática</button>
+    <button onclick="carregar('Termologia e Termodinâmica', this)">Termodinâmica</button>
+    <button onclick="carregar('Óptica', this)">Óptica</button>
+    <button onclick="carregar('Ondulatória', this)">Ondulatória</button>
+    <button onclick="carregar('Eletricidade e Magnetismo', this)">Eletromagnetismo</button>
+    <button onclick="carregar('Física Moderna', this)">Física Moderna</button>
 </nav>
 
 <main>
-    <div id="status">Selecione uma matéria acima para carregar o conteúdo.</div>
-    <div id="display"></div>
+    <div id="status">Escolha um tópico acima para carregar as aulas.</div>
+    <div id="container"></div>
 </main>
 
 <script>
-    // --- COLE A URL DO SEU GOOGLE SCRIPT ABAIXO ---
+    // --- COLE SUA URL ABAIXO ---
     const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwsWAYcKuZ0St1qSCQyTXhBP1cCtuAvNM2A4J1FvpqxGPb2pYxHK8gglWkvBnxK0F2QQA/exec"; 
 
-    let cache = null;
+    let bancoDeDados = null;
 
-    async function buscar(materia, btn) {
-        const display = document.getElementById('display');
+    async function carregar(materia, btn) {
+        const container = document.getElementById('container');
         const status = document.getElementById('status');
         
         document.querySelectorAll('nav button').forEach(b => b.classList.remove('active'));
         btn.classList.add('active');
 
         status.style.display = "block";
-        status.innerHTML = "Carregando aulas de " + materia + "...";
-        display.innerHTML = "";
+        status.innerHTML = "Sincronizando conteúdo de " + materia + "...";
+        container.innerHTML = "";
 
         try {
-            if (!cache) {
+            if (!bancoDeDados) {
                 const res = await fetch(SCRIPT_URL);
-                cache = await res.json();
+                bancoDeDados = await res.json();
             }
 
-            const aulas = cache[materia];
+            const aulas = bancoDeDados[materia] || [];
             status.style.display = "none";
 
-            if (!aulas || aulas.length === 0) {
-                display.innerHTML = "<p style='text-align:center'>Nenhum documento encontrado para esta coluna.</p>";
+            if (aulas.length === 0) {
+                container.innerHTML = "<p style='text-align:center'>Nenhum material encontrado para esta área.</p>";
                 return;
             }
 
             aulas.forEach(aula => {
-                const div = document.createElement('div');
-                div.className = 'card-aula';
-                div.innerHTML = aula.html; // Injeta o HTML formatado diretamente
-                display.appendChild(div);
+                const card = document.createElement('div');
+                card.className = 'card-aula';
+                card.innerHTML = aula.html; // Aqui entra o HTML com negrito e tabela
+                container.appendChild(card);
             });
 
         } catch (e) {
-            status.innerHTML = "Erro ao carregar dados. Verifique a URL do Script e as permissões.";
+            status.innerHTML = "Erro de conexão. Verifique se a URL do Script está correta e se você autorizou o acesso no Google.";
         }
     }
 </script>
